@@ -1,13 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { dummyPublishedImages } from "../assets/assets";
 import Loading from "./Loading";
+import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
 
 const Community = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const {axios} = useAppContext()
 
   const fetchImages = async () => {
-    setImages(dummyPublishedImages);
+    try {
+      const { data } = await axios.get('/api/user/published-images')
+      console.log(data.images);
+      
+      if(data.success) {
+        setImages(data.images);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
     setLoading(false);
   };
 
@@ -35,7 +49,7 @@ const Community = () => {
             shadow-sm hover:shadow-md transition-shadow duration-300"
             >
               <img
-                src={item.imageUrl}
+                src={item.imageUrl} alt=""
                 className="w-full h-40 md:h-50 2xl:h-62 object-cover group-hover:scale-105 transition-transform
               duration-300 ease-in-out"
               />
